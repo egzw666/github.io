@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>寻宝游戏</title>
+    <style>
+        /* 页面动画样式，满足第4点 */
+        #msg{font-size:20px;margin:20px;line-height:2;}
+        .step{margin:8px;padding:6px;border-radius:6px;background:#f0f0f0;}
+        .success{background:#c7f9cc;}
+        .fail{background:#ffcccc;}
+    </style>
+</head>
+<body>
+    <div id="msg"></div>
+<script>
+class TreasureMap {
+    static getInitialClue() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("在古老的图书馆里找到了第一个线索...");
+        }, 1000);
+      });
+    }
+  
+    static decodeAncientScript(clue) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (!clue) {
+            reject("没有线索可以解码!");
+          }
+          resolve("解码成功!宝藏在一座古老的神庙中...");
+        }, 1500);
+      });
+    }
+  
+    static searchTemple(location) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const random = Math.random();
+          if (random < 0.5) {
+            reject("糟糕!遇到了神庙守卫!");
+          }
+          resolve("找到了一个神秘的箱子...");
+        }, 2000);
+      });
+    }
+
+    //=====第2点新增：新加寻宝情节【解开石像谜题】=====
+    static solveStonePuzzle(){
+      return new Promise((resolve,reject)=>{
+        setTimeout(()=>{
+          let r = Math.random();
+          if(r < 0.3){
+            reject("谜题回答错误，触发了机关！");
+          }
+          resolve("石像谜题解开，获得靠近宝箱的资格！");
+        },1800);
+      })
+    }
+  
+    static openTreasureBox() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("恭喜!你找到了传说中的宝藏!");
+        }, 1000);
+      });
+    }
+  }
+
+// 页面输出函数，用于动画页面渲染
+function showText(text, isSuccess=true){
+    const div = document.createElement("div");
+    div.className = "step " + (isSuccess?"success":"fail");
+    div.innerText = text;
+    document.getElementById("msg").appendChild(div);
+}
+
+//=====第3点 async/await重写寻宝全过程=====
+async function findTreasureWithAsyncAwait() {
+  try {
+    const clue = await TreasureMap.getInitialClue();
+    showText(clue);
+
+    const location = await TreasureMap.decodeAncientScript(clue);
+    showText(location);
+
+    const boxHint = await TreasureMap.searchTemple(location);
+    showText(boxHint);
+
+    // 新增情节
+    const puzzleResult = await TreasureMap.solveStonePuzzle();
+    showText(puzzleResult);
+
+    const treasure = await TreasureMap.openTreasureBox();
+    showText(treasure);
+  } catch (error) {
+    showText("任务失败："+error,false);
+  }
+}
+
+// 启动游戏
+findTreasureWithAsyncAwait();
+</script>
+</body>
+</html>
